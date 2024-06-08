@@ -3,8 +3,8 @@ package appDomain;
 import utilities.ReadShapes;
 import utilities.Algorithms;
 import shapes.Shape;
+import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Comparator;
 
 public class Main {
@@ -14,14 +14,27 @@ public class Main {
         String compareType = "";
         String sortAlgorithm = "";
 
-        // Parsing command-line arguments
+        // Parsing command-line arguments using switch-case
         for (String arg : args) {
-            if (arg.startsWith("-f")) {
-                fileName = arg.substring(2);
-            } else if (arg.startsWith("-t")) {
-                compareType = arg.substring(2);
-            } else if (arg.startsWith("-s")) {
-                sortAlgorithm = arg.substring(2);
+            switch (arg.charAt(1)) {
+                case 'f':
+                case 'F':
+                    fileName = arg.substring(2).replace("\"", "");
+                    break;
+                case 't':
+                case 'T':
+                    compareType = arg.substring(2).toLowerCase();
+                    break;
+                case 's':
+                case 'S':
+                    sortAlgorithm = arg.substring(2).toLowerCase();
+                    break;
+                default:
+                    System.out.println("Unknown argument: " + arg);
+                    System.out.println("Usage: java -jar Sort.jar -f<file_name> -t<comparison_type> -s<sorting_algorithm>");
+                    System.out.println("Comparison types: h (height), v (volume), a (base area)");
+                    System.out.println("Sorting algorithms: b (bubble), i (insertion), s (selection), m (merge), q (quick), z (heap)");
+                    return;
             }
         }
 
@@ -33,24 +46,33 @@ public class Main {
             return;
         }
 
-        try {
-            // Debug: Print the file path to ensure it's correct
-            System.out.println("Reading file: " + fileName);
+        // Handle relative file paths
+        File file = new File(fileName);
+        if (!file.isAbsolute()) {
+            file = new File("res", fileName);
+            if (!file.exists()) {
+                file = new File(fileName);
+            }
+        }
 
-            // Read shapes from the specified file
-            Shape[] shapes = ReadShapes.readShapesFromFile("res/" + fileName);
+        try {
+            // Print the file path for debugging
+            System.out.println("Reading file: " + file.getAbsolutePath());
+
+            // Read shapes from the specified file using ReadShapes
+            Shape[] shapes = ReadShapes.readShapesFromFile(file.getAbsolutePath());
 
             // Determine the comparator based on the comparison type
             Comparator<Shape> comparator = null;
-            switch (compareType.toLowerCase()) {
+            switch (compareType) {
                 case "h":
-                    comparator = Comparator.naturalOrder();
+                    comparator = Comparator.comparingDouble(Shape::getHeight).reversed();  // Use natural order for height, descending
                     break;
                 case "a":
-                    comparator = Shape.byBaseArea;
+                    comparator = Shape.byBaseArea.reversed();
                     break;
                 case "v":
-                    comparator = Shape.byVolume;
+                    comparator = Shape.byVolume.reversed();
                     break;
                 default:
                     System.out.println("Invalid comparison type: " + compareType);
@@ -60,30 +82,24 @@ public class Main {
             // Sort shapes using the specified sorting algorithm and comparator
             long startTime = System.currentTimeMillis();
 
-            switch (sortAlgorithm.toLowerCase()) {
+            switch (sortAlgorithm) {
                 case "b":
-                    Arrays.sort(shapes, comparator);
-                    Algorithms.bubbleSort(shapes);
+                    Algorithms.bubbleSort(shapes, comparator);
                     break;
                 case "i":
-                    Arrays.sort(shapes, comparator);
-                    Algorithms.insertionSort(shapes);
+                    Algorithms.insertionSort(shapes, comparator);
                     break;
                 case "s":
-                    Arrays.sort(shapes, comparator);
-                    Algorithms.selectionSort(shapes);
+                    Algorithms.selectionSort(shapes, comparator);
                     break;
                 case "m":
-                    Arrays.sort(shapes, comparator);
-                    Algorithms.mergeSort(shapes);
+                    Algorithms.mergeSort(shapes, comparator);
                     break;
                 case "q":
-                    Arrays.sort(shapes, comparator);
-                    Algorithms.quickSort(shapes);
+                    Algorithms.quickSort(shapes, comparator);
                     break;
                 case "z":
-                    Arrays.sort(shapes, comparator);
-                    Algorithms.heapSort(shapes);
+                    Algorithms.heapSort(shapes, comparator);
                     break;
                 default:
                     System.out.println("Invalid sorting algorithm: " + sortAlgorithm);
@@ -94,8 +110,8 @@ public class Main {
             System.out.println("Sorting time: " + (endTime - startTime) + " milliseconds");
 
             // Print the first, last, and every thousandth value in between
-            System.out.println("First shape: " + shapes[0]);
-            if (shapes.length > 1) {
+            if (shapes.length > 0) {
+                System.out.println("First shape: " + shapes[0]);
                 for (int i = 1000; i < shapes.length; i += 1000) {
                     System.out.println("Shape at index " + i + ": " + shapes[i]);
                 }

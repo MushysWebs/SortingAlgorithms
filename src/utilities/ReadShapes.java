@@ -9,7 +9,6 @@ import shapes.*;
 public class ReadShapes {
 
     public static Shape[] readShapesFromFile(String fileName) throws IOException {
-        // Use the given file path directly
         List<String> lines = Files.readAllLines(Paths.get(fileName));
         int numberOfShapes = Integer.parseInt(lines.get(0));
         Shape[] shapes = new Shape[numberOfShapes];

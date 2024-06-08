@@ -4,7 +4,7 @@ public class SquarePrism extends Shape {
     private double side;
 
     public SquarePrism(double height, double side) {
-        this.height = height;
+        super(height);
         this.side = side;
     }
 

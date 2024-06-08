@@ -4,7 +4,7 @@ public class OctagonalPrism extends Shape {
     private double side;
 
     public OctagonalPrism(double height, double side) {
-        this.height = height;
+        super(height);
         this.side = side;
     }
 

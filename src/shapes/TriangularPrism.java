@@ -4,7 +4,7 @@ public class TriangularPrism extends Shape {
     private double side;
 
     public TriangularPrism(double height, double side) {
-        this.height = height;
+        super(height);
         this.side = side;
     }
 
@@ -15,7 +15,7 @@ public class TriangularPrism extends Shape {
 
     @Override
     public double calcVolume() {
-        return (Math.sqrt(3) / 4) * side * side * height;
+        return calcBaseArea() * height;
     }
 
     @Override
